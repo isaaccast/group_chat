@@ -1,0 +1,43 @@
+body{
+  background-image: url('../imgs/background_1.jpg');
+  background-size: cover;
+  /*background-repeat: no-repeat;*/
+}
+#user{
+  color: grey;
+}
+h2, p{
+  color:grey;
+}
+#chat{
+  width: 600px;
+  height: 500px;
+  border: 1px solid black;
+  margin: auto;
+  overflow-y: scroll;
+}
+#message{
+  width: 594px;
+  margin: auto;
+
+}
+#new_user{
+  color: green;
+  margin: auto;
+  width: 200px;
+  margin-bottom: 10px;
+  display: none;
+}
+#input{
+  margin: auto;
+  margin-top: 20px;
+  width: 600px;
+  height: 600px
+}
+#button{
+  margin-left: 315px;
+  margin-top: 20px;
+}
+#clear{
+  margin-top: 20px;
+}

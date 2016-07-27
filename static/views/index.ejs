@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Group Chat</title>
+    <link rel="stylesheet" href="/css/stylesheet2.css" media="screen" title="no title" charset="utf-8">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+    <script type="text/javascript">
+      $(document).ready(function (){
+        entername();
+        var socket = io.connect();
+        var name = '';
+        if(name = ''){
+          entername();
+        }else if(name = null){
+          entername();
+        }
+        function entername(){
+          var person = prompt('Please enter your name');
+          if(person != null && person != ''){
+            document.getElementById('user').innerHTML = 'You are logged in ' + person;
+            window.name = person;
+            console.log(person);
+          }
+          else if(person != ''){
+            document.getElementById('user').innerHTML = 'You are logged in ' + person;
+            window.name = person;
+            console.log(person);
+          }
+          else{
+            console.log('here');
+            window.name = '';
+            var person = prompt('Please enter your name');
+
+          }
+        }
+        socket.on('user_login', function(data){
+          $('#new_user').html('<p>'+JSON.stringify(data.response)+' just joined the chat!</p>');
+          $('#new_user').fadeIn(function(){
+            setTimeout(function(){
+              $('#new_user').fadeOut();
+            }, 2000);
+          })
+        })
+        socket.emit('new_user',{name:window.name});
+        socket.on('history', function(data){
+          if(data != null){
+            for (var i = 0; i < data.response.length; i++) {
+              $('.chat').append('<p>'+JSON.stringify(data.response[i])+'</p>');
+            }
+          }
+        })
+        socket.on('clear_out', function(){
+          $('.chat').html('');
+        })
+        $('#button').click(function(){
+          socket.emit('new_message', {message:window.name + ": "+$('#message').val()});
+          $('#message').val('');
+        })
+        socket.on('receive_message', function(data){
+          var string = JSON.stringify(data.response);
+          string = string.replace(/['"]+/g, '');
+          $('#chat').append('<p>'+string+'</p>')
+        })
+        $('#clear').click(function(){
+          socket.emit('clear_messages');
+        })
+      })
+    </script>
+  </head>
+  <body class='w3-container'>
+    <h2 class='w3-text-sand'><u>Message Board</u></h2>
+    <h3 id="user">
+
+    </h3>
+    <div id="new_user">
+
+    </div>
+    <div class="w3-container w3-sand w3-leftbar w3-rightbar w3-border-brown w3-round-xlarge" id="chat">
+
+    </div>
+    <div id="input">
+      <textarea name="name" rows="1" cols="40" id='message'></textarea>
+      <button class="w3-btn w3-grey w3-text-shadow w3-padding-large" type='button' name="button" id='clear'>Clear All Messages</button>
+      <button class="w3-btn w3-grey w3-text-shadow w3-padding-large" name="button" id='button'>Send</button>
+    </div>
+  </body>
+</html>
