@@ -3,11 +3,11 @@ body{
   background-size: cover;
   /*background-repeat: no-repeat;*/
 }
-#user{
-  color: grey;
+#user, h2, h4{
+  color: white;
 }
-h2, p{
-  color:grey;
+p{
+  color:black;
 }
 #chat{
   width: 600px;
@@ -24,7 +24,9 @@ h2, p{
 #new_user{
   color: green;
   margin: auto;
-  width: 200px;
+  text-align: center;
+  width: auto;
+  margin-left: auto;
   margin-bottom: 10px;
   display: none;
 }

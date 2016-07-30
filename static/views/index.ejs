@@ -13,53 +13,68 @@
       $(document).ready(function (){
         entername();
         var socket = io.connect();
-        var name = '';
-        if(name = ''){
-          entername();
-        }else if(name = null){
-          entername();
-        }
-        function entername(){
-          var person = prompt('Please enter your name');
-          if(person != null && person != ''){
-            document.getElementById('user').innerHTML = 'You are logged in ' + person;
-            window.name = person;
-            console.log(person);
-          }
-          else if(person != ''){
-            document.getElementById('user').innerHTML = 'You are logged in ' + person;
-            window.name = person;
-            console.log(person);
-          }
-          else{
-            console.log('here');
-            window.name = '';
-            var person = prompt('Please enter your name');
 
+        function entername(){
+          var person = prompt('Hello! Please enter your name.');
+          if(person != null && person != ''){
+            window.name = person;
+            document.getElementById('user').innerHTML = 'You are logged in ' + person;
+          }else{
+            checkname();
           }
         }
+        function checkname(){
+          person = prompt('Your name is required!');
+          if(person != null && person != ''){
+            window.name = person;
+            document.getElementById('user').innerHTML = 'You are logged in ' + person;
+          }else{
+            checkname();
+          }
+        }
+
         socket.on('user_login', function(data){
-          $('#new_user').html('<p>'+JSON.stringify(data.response)+' just joined the chat!</p>');
+          $('#new_user').html('<h4>'+JSON.stringify(data.response)+' just joined the chat!</h4>');
           $('#new_user').fadeIn(function(){
             setTimeout(function(){
               $('#new_user').fadeOut();
             }, 2000);
           })
         })
+        socket.on('cleared', function(data){
+          $('#new_user').html('<h4>'+JSON.stringify(data.response)+' just cleared out the chat.</h4>');
+          $('#new_user').fadeIn(function(){
+            setTimeout(function(){
+              $('#new_user').fadeOut();
+            }, 2000);
+          });
+        })
         socket.emit('new_user',{name:window.name});
         socket.on('history', function(data){
           if(data != null){
             for (var i = 0; i < data.response.length; i++) {
-              $('.chat').append('<p>'+JSON.stringify(data.response[i])+'</p>');
+              var string2 = JSON.stringify(data.response[i]);
+              string2 = string2.replace(/['"]+/g, '');
+              $('#chat').append('<p>'+string2+'</p>');
             }
           }
         })
         socket.on('clear_out', function(){
-          $('.chat').html('');
+          $('#chat').html('');
         })
         $('#button').click(function(){
+          if($('#message').val() != ''){
           socket.emit('new_message', {message:window.name + ": "+$('#message').val()});
           $('#message').val('');
+          }
+        })
+        $(document).keypress(function(e){
+          if(e.which == 13){
+            if($('#message').val() != ''){
+            socket.emit('new_message', {message:window.name + ": "+$('#message').val()});
+            $('#message').val('');
+            }
+          }
         })
         socket.on('receive_message', function(data){
           var string = JSON.stringify(data.response);
@@ -67,26 +82,36 @@
           $('#chat').append('<p>'+string+'</p>')
         })
         $('#clear').click(function(){
-          socket.emit('clear_messages');
+          socket.emit('clear_messages', {name:window.name});
+        })
+        socket.on('user_logout', function(data){
+          $('#new_user').html('<h4>'+JSON.stringify(data.response)+' just left the chat.</h4>');
+          $('#new_user').fadeIn(function(){
+            setTimeout(function(){
+              $('#new_user').fadeOut();
+            }, 2000);
+          })
         })
       })
     </script>
   </head>
   <body class='w3-container'>
-    <h2 class='w3-text-sand'><u>Message Board</u></h2>
-    <h3 id="user">
+    <div class="container">
+      <h2 class='w3-text'><u>Message Board</u></h2>
+      <h4 id="user">
 
-    </h3>
-    <div id="new_user">
+      </h4>
+      <div id="new_user">
 
-    </div>
-    <div class="w3-container w3-sand w3-leftbar w3-rightbar w3-border-brown w3-round-xlarge" id="chat">
+      </div>
+      <div class="w3-container w3-sand w3-leftbar w3-rightbar w3-border-grey w3-round-xlarge" id="chat">
 
-    </div>
-    <div id="input">
-      <textarea  class='w3-sand w3-round-large' name="name" rows="1" cols="40" id='message'></textarea>
-      <button class="w3-btn w3-sand w3-padding-large w3-round-large" type='button' name="button" id='clear'>Clear All Messages</button>
-      <button class="w3-btn w3-sand w3-padding-large w3-round-large" name="button" id='button'>Send</button>
+      </div>
+      <div id="input">
+        <input  class='w3-sand w3-round-medium' name="name" id='message'>
+        <button class="w3-btn w3-sand w3-border w3-border-grey w3-round-large w3-padding-large" type='button' name="button" id='clear'>Clear All Messages</button>
+        <button class="w3-btn w3-sand w3-border w3-border-grey w3-round-large w3-padding-large" name="button" id='button'>Send</button>
+      </div>
     </div>
   </body>
 </html>
